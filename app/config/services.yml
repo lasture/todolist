@@ -1,9 +1,14 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/service_container.html
-parameters:
-#    parameter_name: value
 
+parameters:
+    weather_api_key: 6831045454436240bf702aaf36b828af
+
+# Service
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    app.weather:
+        class: AppBundle\Weather\Weather
+        arguments:
+            - '@csa_guzzle.client.weather'
+            - '@jms_serializer'
+            - %weather_api_key%

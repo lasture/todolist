@@ -2,11 +2,34 @@
 
 namespace AppBundle\Entity;
 
+use JMS\Serializer\Annotation as Serializer;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
+
 
 /**
  * @ORM\Entity
  * @ORM\Table()
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_get",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute=true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_postArticle",
+ *          absolute=true
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *     "weather",
+ *     embedded = @Hateoas\Embedded("expr(service('app.weather').getCurrent())")
+ * )
  */
 class Article
 {
@@ -19,15 +42,23 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank(groups={"post"})
+     * @Serializer\Since("1.0")
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(groups={"post"})
+     * @Serializer\Since("1.0")
      */
     private $content;
 
-    
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Since("2.0")
+     */
+    private $shortDescription;
 
     public function getId()
     {

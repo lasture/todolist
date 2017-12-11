@@ -68,10 +68,46 @@ swiftmailer:
     spool:     { type: memory }
 
 #FOSRestBudle Configuration
+
 fos_rest:
     body_converter:
         enabled: true
+        validate: true
+        validation_errors_argument: violations
     view:
-        formats: { json: true, xml: false, rss: false }
+        formats: { json: true, xml: true, rss: false }
+        view_response_listener: true
+        mime_types:
+                    json: ['application/json', 'application/json;version=1.0', 'application/json;version=2.0']
     serializer:
         serialize_null: true
+    format_listener:
+        rules:
+            - { path: '^/', priorities: ['json'], fallback_format: 'json' }
+    body_listener: true
+    param_fetcher_listener: force
+    exception:
+            enabled: true
+            codes:
+               { AppBundle\Exception\ResourceValidationException: 400, \Exception: 500 }
+    versioning:
+            enabled: true
+            resolvers:
+                media_type: # Accept header
+                    enabled: true
+                    regex: '/(v|version)=(?P<version>[0-9\.]+)/'
+
+
+# SENSIO Configuration
+sensio_framework_extra:
+    request: { converters: true }
+
+# NelmioApiDoc Configuration
+nelmio_api_doc: ~
+
+# Guzzle Configuration
+csa_guzzle:
+    clients:
+        weather:
+            config:
+                base_uri: http://api.openweathermap.org
